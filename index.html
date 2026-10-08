@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khat AI - Premium Calligraphy Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], arabic: ['Amiri', 'serif'] },
+                    colors: {
+                        theme: {
+                            base: 'var(--color-base)',
+                            panel: 'var(--color-panel)',
+                            accent1: 'var(--color-accent1)',
+                            accent2: 'var(--color-accent2)',
+                            text: 'var(--color-text)',
+                            border: 'var(--color-border)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            /* Default Dark Navy Theme - Original Screenshot Design */
+            --color-base: #0B1120;
+            --color-panel: #151E2E;
+            --color-accent1: #F59E0B; /* Amber 500 */
+            --color-accent2: #D97706; /* Amber 600 */
+            --color-text: #F3F4F6;
+            --color-border: #374151;
+        }
+
+        body { 
+            background-color: var(--color-base); 
+            color: var(--color-text); 
+            transition: all 0.3s ease;
+        }
+        
+        /* Removing Glassmorphism - Solid Elegant Panels */
+        .glass-panel { 
+            background-color: var(--color-panel); 
+            border: 1px solid var(--color-border); 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4); 
+            border-radius: 1rem;
+        }
+        .input-field {
+            background-color: var(--color-base);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus { outline: none; border-color: var(--color-accent1); }
+        .input-field::placeholder { color: #6B7280; }
+        
+        .accent-gradient-text { 
+            color: var(--color-text); 
+            font-weight: 800;
+        }
+        
+        /* Dropdown Styling - Kontras Hitam/Putih */
+        select option, select optgroup { background-color: #000000; color: #ffffff; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-base); }
+        ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+        
+        .loader-spinner { 
+            border: 4px solid rgba(245, 158, 11, 0.3); 
+            border-top: 4px solid var(--color-accent1); 
+            border-radius: 50%; width: 40px; height: 40px; 
+            animation: spin 1s linear infinite; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Interactive Radio Buttons for Ratio - SOLID COLOR WHEN CLICKED */
+        input[type="radio"]:checked + div {
+            background-color: var(--color-accent1) !important;
+            color: #000000 !important;
+            border-color: var(--color-accent1) !important;
+        }
+
+        .watermark-overlay {
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 15 EFEK ANIMASI BANNER IKLAN */
+        .anim-scroll-normal { display: inline-block; animation: animScroll linear infinite; }
+        .anim-scroll-glow { display: inline-block; animation: animScroll linear infinite, animGlow 2s ease-in-out infinite alternate; }
+        .anim-scroll-rainbow { display: inline-block; animation: animScroll linear infinite, animRainbow 3s linear infinite; background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red); -webkit-background-clip: text; color: transparent; }
+        .anim-glitch { display: inline-block; animation: animScroll linear infinite; position: relative; }
+        .anim-glitch::before, .anim-glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .anim-glitch::before { left: 2px; text-shadow: -1px 0 red; animation: animGlitchAnim 2s infinite linear alternate-reverse; }
+        .anim-glitch::after { left: -2px; text-shadow: -1px 0 blue; animation: animGlitchAnim2 3s infinite linear alternate-reverse; }
+        .anim-typewriter { overflow: hidden; border-right: .15em solid var(--color-accent1); white-space: nowrap; margin: 0 auto; letter-spacing: .15em; animation: animTyping 3.5s steps(40, end) infinite, animBlinkCaret .75s step-end infinite; }
+        .anim-bounce { display: inline-block; animation: animBounce 2s infinite; }
+        .anim-fade-in-out { animation: animFade 3s infinite; }
+        .anim-color-pulse { animation: animColorPulse 2s infinite; }
+        .anim-neon-flicker { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--color-accent1), 0 0 40px var(--color-accent1); animation: animFlicker 1.5s infinite alternate; }
+        .anim-shadow-wave { display: inline-block; animation: animScroll linear infinite; text-shadow: 2px 2px 4px var(--color-accent2), -2px -2px 4px rgba(255,255,255,0.3); }
+        .anim-zoom-pulse { animation: animZoomPulse 2s infinite ease-in-out; }
+        .anim-swing { transform-origin: top center; animation: animSwing 2s infinite ease-in-out; }
+        .anim-elastic { animation: animElastic 2s infinite; }
+        .anim-shimmer { background: linear-gradient(90deg, var(--color-accent1) 0%, #fff 50%, var(--color-accent1) 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; animation: animShimmer 2s linear infinite; }
+        .anim-text-reveal { clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%); animation: animReveal 3s infinite alternate cubic-bezier(0.77, 0, 0.175, 1); }
+
+        @keyframes animScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-150%); } }
+        @keyframes animGlow { from { text-shadow: 0 0 5px #fff, 0 0 10px var(--color-accent1); } to { text-shadow: 0 0 20px #fff, 0 0 30px var(--color-accent1); } }
+        @keyframes animRainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        @keyframes animTyping { from { width: 0 } to { width: 100% } }
+        @keyframes animBlinkCaret { from, to { border-color: transparent } 50% { border-color: var(--color-accent1); } }
+        @keyframes animBounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        @keyframes animFade { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+        @keyframes animColorPulse { 0% { color: var(--color-accent1); } 50% { color: #fff; } 100% { color: var(--color-accent1); } }
+        @keyframes animFlicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.1; } }
+        @keyframes animZoomPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes animSwing { 20% { transform: rotate(15deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(5deg); } 80% { transform: rotate(-5deg); } 100% { transform: rotate(0deg); } }
+        @keyframes animElastic { 0% { transform: scale3d(1, 1, 1); } 30% { transform: scale3d(1.25, 0.75, 1); } 40% { transform: scale3d(0.75, 1.25, 1); } 50% { transform: scale3d(1.15, 0.85, 1); } 65% { transform: scale3d(0.95, 1.05, 1); } 75% { transform: scale3d(1.05, 0.95, 1); } 100% { transform: scale3d(1, 1, 1); } }
+        @keyframes animShimmer { to { background-position: 200% center; } }
+        @keyframes animReveal { 0% { clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%); } 100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%); } }
+        @keyframes animGlitchAnim { 0% { clip: rect(24px, 9999px, 83px, 0); } 20% { clip: rect(62px, 9999px, 5px, 0); } 40% { clip: rect(10px, 9999px, 73px, 0); } 60% { clip: rect(51px, 9999px, 48px, 0); } 80% { clip: rect(87px, 9999px, 96px, 0); } 100% { clip: rect(13px, 9999px, 20px, 0); } }
+        @keyframes animGlitchAnim2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 20% { clip: rect(4px, 9999px, 81px, 0); } 40% { clip: rect(15px, 9999px, 40px, 0); } 60% { clip: rect(83px, 9999px, 32px, 0); } 80% { clip: rect(11px, 9999px, 60px, 0); } 100% { clip: rect(40px, 9999px, 98px, 0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans relative">
+
+    <!-- LOGIN GATE OVERLAY -->
+    <div id="loginGate" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-4" style="background-color: var(--color-base);">
+        <div class="glass-panel p-8 max-w-md w-full text-center relative border-t-0 shadow-2xl">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center text-3xl shadow-lg" style="background-color: var(--color-accent1); color: #000;">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-2">Khat AI Premium</h2>
+            <p class="text-sm text-gray-400 mb-8">Sistem tersimpan otomatis. Login hanya 1 kali.</p>
+            
+            <div class="space-y-5 text-left">
+                <div>
+                    <label class="text-sm font-semibold mb-1 block">Email Terdaftar</label>
+                    <input type="email" id="loginEmailInput" class="input-field bg-black/30" placeholder="contoh@email.com">
+                </div>
+                <div>
+                    <label class="text-sm font-semibold mb-1 flex justify-between">
+                        <span>API Key Google (Wajib)</span>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-1"><i class="fa-solid fa-link"></i> Dapatkan Key</a>
+                    </label>
+                    <textarea id="loginApiKey" rows="3" class="input-field bg-black/30 text-xs" placeholder="Paste API Key Anda di sini...&#10;(Admin dapat input lebih dari 1, pisahkan dengan KOMA)&#10;Kosongkan jika hanya ngetes di Canvas."></textarea>
+                </div>
+            </div>
+            
+            <button id="loginBtn" class="w-full mt-8 py-3 font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg hover:opacity-90" style="background-color: var(--color-accent1); color: #000;">
+                <i class="fa-solid fa-right-to-bracket"></i> Masuk Aplikasi
+            </button>
+            <p id="loginError" class="text-red-400 text-sm mt-4 hidden text-center font-bold bg-red-900/30 py-2 rounded"><i class="fa-solid fa-triangle-exclamation"></i> Akses Ditolak! Email tidak terdaftar.</p>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL MODAL -->
+    <div id="adminModal" class="fixed inset-0 z-[90] bg-black/90 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b pb-4" style="border-color: var(--color-border);">
+                <h2 class="text-xl font-bold accent-gradient-text flex items-center gap-2"><i class="fa-solid fa-user-shield"></i> Control Panel Super Admin</h2>
+                <button id="closeAdminBtn" class="text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Kolom 1: Manajemen User -->
+                <div class="space-y-6">
+                    <div class="bg-black/20 p-4 rounded-xl border" style="border-color: var(--color-border);">
+                        <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: var(--color-accent1);"><i class="fa-solid fa-users"></i> Kelola Email & Akses</h3>
+                        <div class="flex gap-2 mb-4">
+                            <input type="email" id="newUserEmail" class="input-field text-sm" placeholder="Email baru...">
+                            <button id="addUserBtn" class="bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold">Tambah</button>
+                        </div>
+                        <ul id="userList" class="space-y-2 max-h-32 overflow-y-auto pr-2"></ul>
+                    </div>
+
+                    <div class="bg-black/20 p-4 rounded-xl border" style="border-color: var(--color-border);">
+                        <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: var(--color-accent1);"><i class="fa-solid fa-envelope-circle-check"></i> Ubah Super Admin</h3>
+                        <div class="flex flex-col gap-2">
+                            <input type="email" id="newAdminEmail" class="input-field text-sm" placeholder="Email Admin Baru...">
+                            <button id="requestOtpBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-brands fa-telegram"></i> Kirim OTP Telegram</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom 2: Pengaturan Per-User -->
+                <div class="bg-black/20 p-4 rounded-xl border" style="border-color: var(--color-border);">
+                    <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: var(--color-accent1);"><i class="fa-solid fa-user-cog"></i> Hak Akses Spesifik User</h3>
+                    <select id="selectTargetUser" class="input-field text-sm mb-4">
+                        <option value="">-- Pilih Pengguna --</option>
+                    </select>
+                    
+                    <div id="userSpecificSettings" class="space-y-4 hidden transition-opacity overflow-y-auto max-h-[300px] pr-2">
+                        <!-- Fitur Demo/Waktu -->
+                        <div class="space-y-2 border-b border-gray-700 pb-3">
+                            <span class="text-xs font-semibold text-gray-300 block mb-1"><i class="fa-solid fa-stopwatch text-yellow-500"></i> Mode Demo / Batas Waktu</span>
+                            <div class="flex gap-2">
+                                <select id="userDemoDuration" class="input-field !p-1 !h-8 text-xs w-full">
+                                    <option value="0">Permanen (Tanpa Batas)</option>
+                                    <option value="10">10 Menit</option>
+                                    <option value="30">30 Menit</option>
+                                    <option value="60">1 Jam</option>
+                                    <option value="120">2 Jam</option>
+                                    <option value="300">5 Jam</option>
+                                    <option value="1440">1 Hari (24 Jam)</option>
+                                </select>
+                                <button id="applyDemoBtn" class="bg-yellow-600 hover:bg-yellow-500 text-white px-3 rounded-lg text-xs font-bold whitespace-nowrap">Terapkan</button>
+                            </div>
+                            <p id="demoStatusText" class="text-[10px] text-gray-400 mt-1">Status: Permanen</p>
+                        </div>
+
+                        <div class="space-y-2 border-b border-gray-700 pb-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-semibold text-gray-300">Batas Max Bingkai</span>
+                                <select id="userMaxFrames" class="input-field !p-1 !h-8 text-xs w-20">
+                                    <option value="10">10 Model</option><option value="20">20 Model</option><option value="30">30 Model</option><option value="50">50 Model</option><option value="99">99 Model</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-semibold text-gray-300">Batas Max Kaligrafi</span>
+                                <select id="userMaxStyles" class="input-field !p-1 !h-8 text-xs w-20">
+                                    <option value="10">10 Model</option><option value="20">20 Model</option><option value="30">30 Model</option><option value="59">59 Model</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 border-b border-gray-700 pb-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-semibold text-gray-300">Batas Max Jumlah Gbr</span>
+                                <select id="userMaxImages" class="input-field !p-1 !h-8 text-xs w-16">
+                                    <option value="1">1 Gbr</option><option value="2">2 Gbr</option><option value="4">4 Gbr</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-semibold text-gray-300">Batas Resolusi Max</span>
+                                <select id="userMaxQuality" class="input-field !p-1 !h-8 text-xs w-16">
+                                    <option value="HD">HD</option><option value="FHD">FHD</option><option value="4K">4K</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2 border-b border-gray-700 pb-3">
+                             <div class="flex justify-between items-center">
+                                <span class="text-xs font-semibold text-gray-300">Tema Khusus Akun Ini</span>
+                                <select id="userTheme" class="input-field !p-1 !h-8 text-xs w-28">
+                                    <option value="global">-- Ikuti Global --</option>
+                                    <!-- Injected via JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-semibold text-gray-300">Izin Pilih Aspek Rasio</span>
+                                <input type="checkbox" id="userAllowRatio" class="accent-[var(--color-accent1)] w-4 h-4">
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-semibold text-gray-300">Izin Upload Wajah (Img2Img)</span>
+                                <input type="checkbox" id="userAllowUpload" class="accent-[var(--color-accent1)] w-4 h-4">
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-semibold text-gray-300">Izin Prompt Custom Sendiri</span>
+                                <input type="checkbox" id="userAllowCustom" class="accent-[var(--color-accent1)] w-4 h-4">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom 3: Tema Global & Promo -->
+                <div class="space-y-6">
+                    <div class="bg-black/20 p-4 rounded-xl border" style="border-color: var(--color-border);">
+                        <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: var(--color-accent1);"><i class="fa-solid fa-bullhorn"></i> Pengaturan Iklan & Promosi</h3>
+                        
+                        <div class="space-y-3 mb-4 pb-4 border-b border-gray-700">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-semibold text-gray-300">Aktifkan Banner Iklan</span>
+                                <input type="checkbox" id="globalBannerToggle" class="accent-[var(--color-accent1)] w-4 h-4">
+                            </label>
+                            <input type="text" id="globalBannerText" class="input-field text-xs" placeholder="Teks Iklan/Banner Berjalan...">
+                            <div class="flex gap-2">
+                                <select id="globalBannerSpeed" class="input-field !p-1 !h-8 text-xs w-1/3">
+                                    <option value="15s">Lambat</option><option value="10s">Sedang</option><option value="5s">Cepat</option>
+                                </select>
+                                <select id="globalBannerStyle" class="input-field !p-1 !h-8 text-xs w-2/3">
+                                    <option value="anim-scroll-normal">1. Biasa (Berjalan)</option>
+                                    <option value="anim-scroll-glow">2. Bersinar (Glow)</option>
+                                    <option value="anim-scroll-rainbow">3. Pelangi Berjalan</option>
+                                    <option value="anim-glitch">4. Rusak (Glitch)</option>
+                                    <option value="anim-typewriter">5. Mesin Tik</option>
+                                    <option value="anim-bounce">6. Melompat (Bounce)</option>
+                                    <option value="anim-fade-in-out">7. Pudar Keluar-Masuk</option>
+                                    <option value="anim-color-pulse">8. Denyut Warna</option>
+                                    <option value="anim-neon-flicker">9. Neon Berkedip</option>
+                                    <option value="anim-shadow-wave">10. Gelombang Bayangan</option>
+                                    <option value="anim-zoom-pulse">11. Zoom Berdenyut</option>
+                                    <option value="anim-swing">12. Berayun (Swing)</option>
+                                    <option value="anim-elastic">13. Karet Elastis</option>
+                                    <option value="anim-shimmer">14. Kilauan Cahaya</option>
+                                    <option value="anim-text-reveal">15. Muncul Perlahan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-4 pb-4 border-b border-gray-700">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-semibold text-gray-300">Tampilkan Tombol Promo</span>
+                                <input type="checkbox" id="globalPromoToggle" class="accent-[var(--color-accent1)] w-4 h-4">
+                            </label>
+                            <input type="text" id="globalPromoTitle" class="input-field text-xs" placeholder="Judul Tombol (Cth: Promo Spesial)">
+                            <input type="text" id="globalPromoUrl" class="input-field text-xs" placeholder="Link Tujuan (Cth: https://wa.me/...)">
+                        </div>
+
+                        <h3 class="text-sm font-bold mb-3 flex items-center gap-2 mt-2" style="color: var(--color-accent1);"><i class="fa-solid fa-palette"></i> Tema Global (25 Warna Premium)</h3>
+                        <p class="text-[10px] text-gray-400 mb-2">Tema ini diterapkan ke semua pengguna.</p>
+                        <select id="globalThemeSelect" class="input-field text-sm">
+                            <!-- Injected via JS -->
+                        </select>
+                    </div>
+
+                    <div class="bg-black/20 p-4 rounded-xl border" style="border-color: var(--color-border);">
+                        <button id="saveGlobalSettingsBtn" class="w-full bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold">Simpan Pengaturan Utama</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP VERIFICATION MODAL -->
+    <div id="otpModal" class="fixed inset-0 z-[95] bg-black/95 hidden items-center justify-center p-4">
+        <div class="glass-panel p-8 max-w-sm w-full text-center border-blue-500/30">
+            <i class="fa-brands fa-telegram text-5xl text-blue-500 mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">Verifikasi Telegram</h2>
+            <p class="text-sm text-gray-400 mb-6">Masukkan 6 digit kode OTP yang telah dikirim.</p>
+            <input type="text" id="otpInput" maxlength="6" class="w-full bg-black/50 border border-blue-900 rounded-xl p-4 text-center text-2xl tracking-[0.5em] font-mono mb-4 text-white">
+            <div class="flex gap-2">
+                <button id="cancelOtpBtn" class="w-1/3 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-xl text-sm">Batal</button>
+                <button id="verifyOtpBtn" class="w-2/3 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl">Verifikasi</button>
+            </div>
+            <p id="otpError" class="text-red-400 text-sm mt-3 hidden">Kode OTP Salah!</p>
+        </div>
+    </div>
+
+    <!-- Custom Message Box -->
+    <div id="msgBox" class="fixed inset-0 z-[110] bg-black/80 hidden items-center justify-center p-4">
+        <div class="glass-panel p-8 max-w-sm w-full text-center">
+            <div id="msgIcon" class="text-5xl mb-4" style="color: var(--color-accent1);"><i class="fa-solid fa-circle-info"></i></div>
+            <h3 id="msgTitle" class="text-xl font-bold mb-2">Info</h3>
+            <p id="msgText" class="text-gray-300 mb-6 text-sm"></p>
+            <button id="closeMsgBtn" class="w-full font-bold py-3 rounded-xl text-lg hover:opacity-90 mt-4" style="background-color: var(--color-accent1); color: var(--color-base);">Mengerti</button>
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="glass-panel z-40 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 border-x-0 border-t-0 rounded-none mb-6 shadow-xl">
+        <div class="flex items-center gap-4 w-full md:w-auto">
+            <div class="w-12 h-12 rounded-full flex flex-shrink-0 items-center justify-center text-2xl shadow-lg" style="background-color: var(--color-accent1); color: #000;">
+                <i class="fa-solid fa-pen-nib"></i>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-xl md:text-2xl font-bold uppercase tracking-wider text-white">Khat AI Premium</h1>
+                    <button id="openAdminBtn" class="hidden bg-red-900/40 hover:bg-red-800 text-red-200 border border-red-700/50 px-3 py-1 rounded-lg text-xs font-bold items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-user-shield"></i> Super Admin
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400">Ultimate Calligraphy Studio <span class="font-bold ml-1 text-gray-500">v3.1</span></p>
+                
+                <!-- Container Banner Berjalan -->
+                <div id="bannerContainer" class="hidden mt-2 w-full max-w-[280px] sm:max-w-[400px] overflow-hidden rounded-md py-1 relative">
+                    <div id="bannerTextElem" class="text-[10px] sm:text-xs font-semibold whitespace-nowrap" style="color: var(--color-accent1);">
+                        <!-- Teks banner masuk sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4 md:gap-6 text-sm text-gray-300 whitespace-nowrap overflow-x-auto w-full md:w-auto justify-center md:justify-end">
+            <div class="flex flex-col items-end gap-1">
+                <div class="flex items-center gap-2 text-[10px] sm:text-xs font-semibold"><i class="fa-solid fa-calendar-days" style="color: var(--color-accent1);"></i> <span id="masehi-date"></span></div>
+                <div class="flex items-center gap-2 text-[10px] sm:text-xs font-semibold"><i class="fa-solid fa-moon" style="color: var(--color-accent1);"></i> <span id="hijri-date"></span></div>
+                <a href="#" target="_blank" id="promoLinkContainer" class="hidden items-center gap-2 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-lg border shadow-sm transition-transform hover:scale-105 mt-1" style="background-color: var(--color-accent1); color: #000; border-color: var(--color-accent2);">
+                    <i class="fa-solid fa-star"></i> <span id="promoLinkText">Promo Spesial</span>
+                </a>
+                
+                <!-- TIMER DEMO COUNTDOWN -->
+                <div id="demoTimerContainer" class="hidden items-center justify-center gap-2 px-3 py-1.5 rounded-lg border shadow-sm mt-1 animate-pulse w-full" style="background-color: #7F1D1D; color: #FECACA; border-color: #EF4444;">
+                    <i class="fa-solid fa-stopwatch text-sm"></i> <span id="demoTimerText" class="text-[10px] sm:text-xs font-bold tracking-wider">00:00:00</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 font-mono font-bold"><i class="fa-solid fa-clock" style="color: var(--color-accent1);"></i> <span id="clock-time"></span></div>
+            <button id="logoutBtn" class="hover:text-red-400 ml-2 p-2" title="Keluar"><i class="fa-solid fa-power-off text-xl"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-[1400px] mx-auto px-4 pb-8 flex flex-col lg:flex-row gap-6">
+        
+        <!-- Left Panel: Controls -->
+        <aside class="w-full lg:w-[40%] xl:w-[35%] glass-panel p-6 flex flex-col gap-5 h-fit">
+            
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-language" style="color: var(--color-accent1);"></i> Teks / Kalimat Utama</label>
+                    <textarea id="inputText" rows="2" class="input-field" placeholder="Ketik kata/kalimat di sini... Contoh: Bismillah"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-code-compare" style="color: var(--color-accent1);"></i> Mode Pemrosesan Teks</label>
+                    <select id="textMode" class="input-field text-sm font-semibold">
+                        <option value="transliteration">Huruf Arab tanpa ubah makna (Sesuai ejaan asli - Cocok utk nama)</option>
+                        <option value="translation">Terjemahkan Makna ke Bahasa Arab Baku</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="space-y-2 relative">
+                    <label class="text-sm font-semibold flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-palette" style="color: var(--color-accent1);"></i> Model Kaligrafi</span>
+                        <span id="lblStyleCount" class="hidden text-[10px] font-bold bg-black/50 px-2 py-0.5 rounded text-gray-400">(59 Pilihan)</span>
+                    </label>
+                    <select id="khatStyle" class="input-field text-sm font-medium h-11"></select>
+                    <textarea id="customStylePrompt" rows="4" class="hidden mt-2 input-field text-sm" style="border-color: var(--color-accent1);" placeholder="Deskripsi Kustom Kaligrafi: Jelaskan gaya tulisan yang Anda inginkan secara detail.&#10;Contoh: Tulisan berbentuk siluet burung merpati sedang terbang ke arah kanan, garis sangat tebal dan tegas, tidak banyak lekukan rumit, gaya minimalis modern futuristik."></textarea>
+                </div>
+                <div class="space-y-2 relative">
+                    <label class="text-sm font-semibold flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-crop-simple" style="color: var(--color-accent1);"></i> Bingkai & Latar</span>
+                        <span id="lblFrameCount" class="hidden text-[10px] font-bold bg-black/50 px-2 py-0.5 rounded text-gray-400">(99 Pilihan)</span>
+                    </label>
+                    <select id="frameStyle" class="input-field text-sm font-medium h-11"></select>
+                    <textarea id="customFramePrompt" rows="4" class="hidden mt-2 input-field text-sm" style="border-color: var(--color-accent1);" placeholder="Deskripsi Kustom Bingkai: Jelaskan detail background Anda.&#10;Contoh: Terapkan tulisan ini tersablon di atas jaket hoodie berwarna hitam pekat, buat tulisan melengkung mengikuti lipatan dan lekukan kain jaket agar terlihat sangat nyata."></textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-fill-drip" style="color: var(--color-accent1);"></i> Warna Tulisan</label>
+                    <div class="flex items-center gap-3 input-field p-2">
+                        <input type="color" id="textColor" value="#FFD700" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0">
+                        <div class="flex flex-col">
+                            <input type="text" id="textColorText" value="#FFD700" class="bg-transparent border-none font-bold w-full text-sm focus:outline-none uppercase">
+                            <span id="colorNameDisplay" class="text-[10px] text-gray-400 font-semibold">Kuning Emas</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2" id="imageUploadContainer">
+                    <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up" style="color: var(--color-accent1);"></i> Wajah / Media Tambahan (Opsional)</label>
+                    <label for="imageUpload" class="flex flex-col items-center justify-center w-full py-4 border-2 border-dashed rounded-xl cursor-pointer hover:bg-black/20 transition-colors" style="border-color: var(--color-border); background-color: var(--color-base);">
+                        <div class="flex flex-col items-center gap-1" id="uploadLabel">
+                            <i class="fa-solid fa-image text-gray-400 text-xl"></i><span class="text-xs text-gray-400 font-medium text-center">Klik Upload Jpg/Png<br>(Wajah/Batu/Baju)</span>
+                        </div>
+                        <input id="imageUpload" type="file" class="hidden" accept="image/png, image/jpeg, image/webp" />
+                    </label>
+                    <div class="flex justify-between items-center mt-1 hidden" id="previewWrapper">
+                        <img id="imagePreview" class="h-12 w-auto object-cover rounded border border-gray-600" />
+                        <button id="removeImageBtn" class="text-xs text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-black/30 rounded-lg">Hapus Gambar</button>
+                    </div>
+                    <textarea id="mediaPrompt" rows="2" class="input-field text-xs mt-2" placeholder="Jika Upload Wajah: Buat tersenyum/tertawa (Identitas asli tetap dipertahankan 100%)."></textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2" id="ratioContainer">
+                    <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-expand" style="color: var(--color-accent1);"></i> Aspek Rasio</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="ratio" value="1:1" class="peer sr-only" checked>
+                            <div class="text-center py-2 input-field !rounded-lg text-sm font-bold border-gray-600 transition-colors flex flex-col items-center justify-center h-full">
+                                <span>1:1</span><span class="text-[9px] font-normal opacity-80 mt-0.5">IG Post/Profil</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="ratio" value="9:16" class="peer sr-only">
+                            <div class="text-center py-2 input-field !rounded-lg text-sm font-bold border-gray-600 transition-colors flex flex-col items-center justify-center h-full">
+                                <span>9:16</span><span class="text-[9px] font-normal opacity-80 mt-0.5">TikTok/Reels/WA</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="ratio" value="16:9" class="peer sr-only">
+                            <div class="text-center py-2 input-field !rounded-lg text-sm font-bold border-gray-600 transition-colors flex flex-col items-center justify-center h-full">
+                                <span>16:9</span><span class="text-[9px] font-normal opacity-80 mt-0.5">YouTube/FB/TV</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group relative">
+                            <input type="radio" name="ratio" value="3:4" class="peer sr-only">
+                            <div class="text-center py-2 input-field !rounded-lg text-sm font-bold border-gray-600 transition-colors flex flex-col items-center justify-center h-full">
+                                <span>3:4</span><span class="text-[9px] font-normal opacity-80 mt-0.5">IG Portrait</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-2" id="multiImageContainer">
+                        <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group" style="color: var(--color-accent1);"></i> Jumlah Hasil</label>
+                        <div class="grid grid-cols-4 gap-1">
+                            <label class="cursor-pointer"><input type="radio" name="imageCount" value="1" class="peer sr-only" checked><div class="text-center py-1.5 input-field !rounded-md text-sm font-bold transition-colors">1</div></label>
+                            <label class="cursor-pointer"><input type="radio" name="imageCount" value="2" class="peer sr-only"><div class="text-center py-1.5 input-field !rounded-md text-sm font-bold transition-colors">2</div></label>
+                            <label class="cursor-pointer hidden"><input type="radio" name="imageCount" value="3" class="peer sr-only"><div class="text-center py-1.5 input-field !rounded-md text-sm font-bold transition-colors">3</div></label>
+                            <label class="cursor-pointer"><input type="radio" name="imageCount" value="4" class="peer sr-only"><div class="text-center py-1.5 input-field !rounded-md text-sm font-bold transition-colors">4</div></label>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2" id="qualityContainer">
+                        <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-gem" style="color: var(--color-accent1);"></i> Kualitas Resolusi</label>
+                        <div class="grid grid-cols-3 gap-1">
+                            <label class="cursor-pointer"><input type="radio" name="quality" value="HD" class="peer sr-only" checked><div class="text-center py-1.5 input-field !rounded-md text-xs font-bold transition-colors">HD</div></label>
+                            <label class="cursor-pointer"><input type="radio" name="quality" value="FHD" class="peer sr-only"><div class="text-center py-1.5 input-field !rounded-md text-xs font-bold transition-colors">FHD</div></label>
+                            <label class="cursor-pointer"><input type="radio" name="quality" value="4K" class="peer sr-only"><div class="text-center py-1.5 input-field !rounded-md text-xs font-bold transition-colors">4K</div></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 mt-2">
+                <label class="text-sm font-semibold flex items-center gap-2"><i class="fa-solid fa-copyright" style="color: var(--color-accent1);"></i> Watermark & Unduhan</label>
+                <input type="text" id="watermarkInput" class="input-field text-sm" placeholder="Ketik Watermark Anda di sini...">
+                <div class="flex gap-4 mt-2 px-2">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-300">
+                        <input type="checkbox" id="dlOriginal" checked class="accent-[var(--color-accent1)] w-4 h-4"> Gambar Asli (Bersih)
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-300">
+                        <input type="checkbox" id="dlWatermark" checked class="accent-[var(--color-accent1)] w-4 h-4"> + Versi Watermark
+                    </label>
+                </div>
+            </div>
+
+            <button id="generateBtn" class="w-full py-4 mt-4 font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 text-lg hover:scale-[1.02] transition-transform uppercase tracking-wider" style="background-color: var(--color-accent1); color: #000;">
+                <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Generate Kaligrafi
+            </button>
+        </aside>
+
+        <!-- Right Panel: Results -->
+        <section class="w-full lg:w-[60%] xl:w-[65%] flex flex-col gap-4">
+            <div class="flex justify-between items-center glass-panel p-4 py-3 border-x-0 border-t-0 rounded-none bg-transparent shadow-none" style="border-bottom: 2px solid var(--color-border);">
+                <h2 id="resultTitle" class="text-lg font-bold flex items-center gap-2 text-white"><i class="fa-regular fa-images" style="color: var(--color-accent1);"></i> Hasil Generate</h2>
+                <button id="downloadAllBtn" class="hidden hover:opacity-80 border px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm transition-opacity" style="background-color: var(--color-panel); border-color: var(--color-border); color: var(--color-accent1);">
+                    <i class="fa-solid fa-download"></i> Download Sesuai Pilihan Centang
+                </button>
+            </div>
+            
+            <!-- Main Results Grid - Removed bg color to match dark aesthetic -->
+            <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full p-2">
+                <!-- Placeholder / Empty State -->
+                <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-600 border-2 border-dashed border-gray-700 rounded-2xl">
+                    <i class="fa-regular fa-image text-6xl mb-4 opacity-50"></i>
+                    <p class="font-semibold text-sm">Belum ada karya yang di-generate.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-[120] bg-black/95 hidden flex flex-col items-center justify-center p-4 backdrop-blur-md">
+        <button id="closeLightbox" class="absolute top-6 right-6 text-white text-4xl hover:text-gray-300 transition-colors z-50"><i class="fa-solid fa-xmark"></i></button>
+        <div class="relative max-w-full max-h-[80vh] flex items-center justify-center">
+             <img id="lightboxImg" src="" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+        </div>
+        <button id="downloadSingleBtn" class="mt-6 font-bold px-8 py-4 rounded-xl flex items-center gap-3 shadow-2xl text-lg hover:scale-105 transition-transform z-50" style="background-color: var(--color-accent1); color: #000;">
+            <i class="fa-solid fa-download"></i> Download (Sesuai Pilihan Centang)
+        </button>
+    </div>
+
+    <script>
+        // ==========================================
+        // KONFIGURASI TELEGRAM OTP & LISTS
+        // ==========================================
+        const TELEGRAM_BOT_TOKEN = "KODE_TOKEN_ANDA_DISINI";
+        const TELEGRAM_CHAT_ID = "CHAT_ID_ANDA_DISINI";
+        
+        // 25 Premium Themes Dictionary (Bahasa Indonesia)
+        const themes = {
+            "default": { name: "Standar Hitam (Default)", base: '#0B1120', panel: '#151E2E', accent1: '#F59E0B', accent2: '#D97706', text: '#F3F4F6', border: '#374151' },
+            "putih": { name: "Putih Bersih VIP", base: '#F9FAFB', panel: '#FFFFFF', accent1: '#2563EB', accent2: '#1D4ED8', text: '#111827', border: '#E5E7EB' },
+            "biru": { name: "Biru Samudra", base: '#0F172A', panel: '#1E293B', accent1: '#38BDF8', accent2: '#0284C7', text: '#F0F9FF', border: '#334155' },
+            "emas": { name: "Emas Kerajaan", base: '#111111', panel: '#1A1A1A', accent1: '#FFD700', accent2: '#DAA520', text: '#F8F8F8', border: '#332900' },
+            "zamrud": { name: "Hijau Zamrud Islami", base: '#022C22', panel: '#064E3B', accent1: '#10B981', accent2: '#059669', text: '#ECFDF5', border: '#047857' },
+            "merah": { name: "Merah Delima (Ruby)", base: '#4C0519', panel: '#701A31', accent1: '#E11D48', accent2: '#BE123C', text: '#FFE4E6', border: '#9F1239' },
+            "perak": { name: "Perak Metalik", base: '#171717', panel: '#262626', accent1: '#A3A3A3', accent2: '#737373', text: '#FAFAFA', border: '#404040' },
+            "kopi": { name: "Cokelat Kopi Klasik", base: '#3E2723', panel: '#4E342E', accent1: '#D7CCC8', accent2: '#BCAAA4', text: '#EFEBE9', border: '#5D4037' },
+            "ungu": { name: "Ungu Royal VIP", base: '#2E1065', panel: '#4C1D95', accent1: '#FBBF24', accent2: '#F59E0B', text: '#F3E8FF', border: '#5B21B6' },
+            "senja": { name: "Jingga Senja Hangat", base: '#431407', panel: '#7C2D12', accent1: '#F97316', accent2: '#EA580C', text: '#FFF7ED', border: '#9A3412' },
+            "safir": { name: "Batu Safir Cyber", base: '#0A192F', panel: '#112240', accent1: '#64FFDA', accent2: '#4CD6B6', text: '#CCD6F6', border: '#233554' },
+            "kayu": { name: "Serat Kayu Jati", base: '#2C1A12', panel: '#3E2723', accent1: '#D4A373', accent2: '#FAEDCD', text: '#FEFAE0', border: '#5C4033' },
+            "maroon": { name: "Merah Maroon Elegan", base: '#3B0918', panel: '#5C0F24', accent1: '#FCA5A5', accent2: '#F87171', text: '#FEF2F2', border: '#881337' },
+            "langit": { name: "Biru Langit Cerah", base: '#0C4A6E', panel: '#075985', accent1: '#7DD3FC', accent2: '#38BDF8', text: '#F0F9FF', border: '#0284C7' },
+            "rosegold": { name: "Emas Mawar (Rose Gold)", base: '#4A154B', panel: '#6B21A8', accent1: '#F472B6', accent2: '#FB7185', text: '#FDF2F8', border: '#86198F' },
+            "gading": { name: "Kuning Gading Klasik", base: '#1C1917', panel: '#292524', accent1: '#FEF3C7', accent2: '#FDE68A', text: '#FFFBEB', border: '#44403C' },
+            "zaitun": { name: "Hijau Zaitun Alami", base: '#1A2F1C', panel: '#244026', accent1: '#A3E635', accent2: '#84CC16', text: '#ECFCCB', border: '#365314' },
+            "pekat": { name: "Hitam Pekat Layar", base: '#000000', panel: '#050505', accent1: '#3B82F6', accent2: '#2563EB', text: '#E0E0E0', border: '#111111' },
+            "krem": { name: "Krem Lembut Hangat", base: '#FDF5E6', panel: '#FFF8DC', accent1: '#1E3A8A', accent2: '#1E40AF', text: '#1E3A8A', border: '#DEB887' },
+            "tembaga": { name: "Tembaga Antik", base: '#1A1110', panel: '#2C1D11', accent1: '#B87333', accent2: '#CD7F32', text: '#FFDAB9', border: '#4A3018' },
+            "platina": { name: "Platina Abu-abu Terang", base: '#1F2937', panel: '#374151', accent1: '#E5E7EB', accent2: '#D1D5DB', text: '#F9FAFB', border: '#4B5563' },
+            "neon": { name: "Neon Hijau Matrix", base: '#09090B', panel: '#18181B', accent1: '#22C55E', accent2: '#16A34A', text: '#4ADE80', border: '#27272A' },
+            "lavender": { name: "Ungu Lavender Lembut", base: '#312E81', panel: '#4338CA', accent1: '#C7D2FE', accent2: '#A5B4FC', text: '#EEF2FF', border: '#4F46E5' },
+            "pastel": { name: "Warna Pastel 3D", base: '#FDF4FF', panel: '#FAE8FF', accent1: '#D946EF', accent2: '#C026D3', text: '#4A044E', border: '#F0ABFC' },
+            "monokrom": { name: "Monokrom Gelap", base: '#18181B', panel: '#27272A', accent1: '#F4F4F5', accent2: '#E4E4E7', text: '#FFFFFF', border: '#3F3F46' }
+        };
+
+        const populateThemes = () => {
+            let html = '';
+            let count = 1;
+            for(let key in themes) { html += `<option value="${key}">${count}. ${themes[key].name}</option>`; count++; }
+            document.getElementById('globalThemeSelect').innerHTML = html;
+            document.getElementById('userTheme').innerHTML = `<option value="global">-- Ikuti Global --</option>` + html;
+        };
+        populateThemes();
+
+        // 59 Styles Array
+        const rawStyles = [
+            "Tsuluts (Elegan & Mengalir)", "Kufi (Geometris & Tegas)", "Diwani (Melengkung Bebas)", "Naskh (Standar Bacaan Quran)", "Riq'ah (Cepat & Pendek)", 
+            "Maghrebi (Gaya Afrika Utara)", "Nastaliq (Persia Menggantung)", "Muhaqqaq (Tajam & Panjang)", "Tughra (Stempel Sultan/Rumit)", "Kufi Murabba (Kotak Labirin)",
+            "Khat Arab Standar (Biasa)", "Modern Abstract (Seni Kontemporer)", "Diwani Jali (Penuh Ornamen)", "Farisi (Aliran Persia)", "Raihani (Elegan & Tipis)",
+            "Ijazah (Gaya Sertifikasi Kaligrafi)", "Sini (Gaya Tiongkok/China Islami)", "Andalusi (Gaya Spanyol Moor)", "Sudani (Blok Kasar Afrika)", "Bihari (Gaya India)",
+            "Tuluth Jali (Gaya Monumen Besar)", "Kufi Fatimid (Klasik Mesir)", "Kufi Kairouan (Klasik Tunisia)", "Kufi Geometris Abstrak", "Sunbuli (Aliran Dinamis)",
+            "Tawqi (Gaya Tanda Tangan Klasik)", "Ghubar (Gaya Debu/Sangat Kecil)", "Makki (Gaya Mekkah Awal)", "Madani (Gaya Madinah Awal)", "Pseudo-Kufic (Eropa Abad Pertengahan)",
+            "Zoomorphic (Membentuk Hewan/Burung)", "Anthropomorphic (Membentuk Wujud Wajah)", "Floral Kufic (Kufi dengan Daun/Bunga)", "Plaited Kufic (Kufi Simpul Tali)", "Square Geometric (Pola Kotak Penuh)",
+            "Mashq (Tarik Mendatar Ekstrim)", "Muhaqqaq Jali (Muhaqqaq Besar)", "Naskh Ottoman (Gaya Turki Usmani)", "Naskh Persian (Naskh Gaya Persia)", "Shikasteh (Nastaliq Patah-patah)",
+            "Ta'liq (Huruf Bergantung Miring)", "Hurufiyya (Seni Huruf Arab Modern)", "Graffiti Arabic (Seni Jalanan Tembok)", "Minimalist Vector Arabic (Bersih/Datar)", "Neon Tube Calligraphy (Lampu Neon 3D)",
+            "3D Extruded Calligraphy (Huruf Timbul 3D)", "Metallic Carved (Ukiran Logam)", "Gold Leaf Illuminated (Dilapis Emas Murni)", "Watercolor Brush Arabic (Kuas Cat Air)", "Ink Wash Sumi-e (Tinta Jepang/China)",
+            "Digital Glitch Arabic (Efek Layar Rusak)", "Pixel Art Arabic (Gaya Retro 8-bit)", "Gothic Arabic Hybrid (Campuran Gothik)", "Cyberpunk Arabic Script (Futuristik)", "Steampunk Arabic Mechanism (Mesin Uap)",
+            "Woodcut Print Arabic (Ukiran Stempel Kayu)", "Stained Glass Arabic (Kaca Patri Masjid)", "Mosaic Tile Calligraphy (Susunan Keramik)", "Calligraffiti (Campuran Kaligrafi & Graffiti)"
+        ];
+
+        const generateStyles = (limit, allowCustom) => {
+            let html = '';
+            for(let i=0; i<Math.min(limit, rawStyles.length); i++) html += `<option value="${rawStyles[i]}">${i+1}. ${rawStyles[i]}</option>`;
+            if(allowCustom) html += `<option value="CUSTOM" id="optCustomStyle" class="font-bold text-yellow-400" style="color:yellow;">✨ Custom Model (Ketik Sendiri)</option>`;
+            return html;
+        };
+
+        // 99 Frames Array (Indonesian)
+        const rawFrames = [
+            "Tanpa Bingkai (Latar Transparan/Teks Saja)", "Otomatis (Tampilan Yang Lagi Trend Saat Ini)",
+            "Emas Elegan di Atas Hitam Pekat", "Kulit VIP Mewah Gelap", "Latar Beludru Merah Kerajaan", "Marmer Premium dengan Urat Emas", "Pola Geometris Islami Klasik (Emas/Biru)", 
+            "Mandala Bunga Arabesque", "Bingkai Platina Minimalis", "Zamrud Tua dengan Aksen Emas", "Kain Damask Merah Rubi", "Batu Poles Hitam Onyx",
+            "Bingkai 3D Timbul Keluar", "Glassmorphism Modern (Kaca Buram)", "Studio Minimalis Bersih", "Ruangan Putih dengan Bayangan Lembut", "Mengambang di Ruang 3D", 
+            "Permukaan Mengkilap Holografik", "Logam Cair Perak", "Plat Rose Gold Dipoles", "Keramik Hitam Matte", "Platform Abstrak Isometrik",
+            "Pemandangan Kota 3D Cyberpunk Neon", "Grid Synthwave Menyala", "Aura Neon Merah Muda & Biru", "Tampilan HUD Sci-Fi Futuristik", "Hujan Digital Matrix", 
+            "Papan Reklame LED Menyala", "Cahaya Neon Gang Gelap", "Potongan Akrilik Laser Bercahaya", "Juntaian Serat Optik", "Gaya Grid Tron Legacy",
+            "Kertas Perkamen Kuno Berumur", "Papan Kayu Pedesaan", "Dinding Beton Kasar", "Kertas Kerajinan Kusut", "Tirai Kain Sutra Lembut", 
+            "Tekstur Kain Denim", "Logam Aluminium Disikat", "Besi Bergelombang Berkarat", "Pasir Berbutir Halus", "Riak Air Jernih",
+            "Galaksi Langit Berbintang", "Awan Halus di Langit Biru", "Cakrawala Jingga Senja", "Daun Hutan Gelap", "Taman Mawar Mekar", 
+            "Biru Samudra Dalam", "Cahaya Magma Vulkanik", "Kristal Gua Es", "Daun Musim Gugur Berguguran", "Bukit Pasir Gurun",
+            "Latar Belakang Cipratan Cat Air", "Tekstur Kanvas Lukisan Cat Minyak", "Seni Tuang Cairan Abstrak", "Bentuk Bauhaus Geometris", "Titik Halftone Pop Art", 
+            "Tetesan Tinta di Dalam Air", "Gumpalan Asap di Atas Hitam", "Papan Tulis dengan Debu Kapur", "Dinding Bata Graffiti", "Ubin Kaca Mosaik",
+            "Cahaya Surga Lembut Halus", "Sinar Matahari Masuk Jendela", "Cahaya Hangat Lilin", "Lorong Lengkungan Interior Masjid", "Desain Cekungan Mihrab", 
+            "Lentera Ramadhan (Fanoos)", "Bulan Sabit dan Bintang", "Oase Gurun di Malam Hari", "Taman Zen yang Damai", "Efek Halo Bercahaya",
+            "Jaring Gradien Pelangi", "Warna Permen Pastel", "Cipratan Cat Neon Cerah", "Nuansa Hutan Tropis", "Matahari Terbenam Retrowave 80-an", 
+            "Pusaran Psychedelic", "Lampu Meriah Karnaval", "Ledakan Bubuk Warna Holi", "Jendela Kaca Patri", "Blok Warna Mondrian",
+            "Latar Belakang Tak Terhingga Putih Murni", "Vignette Abu-abu Lembut", "Kertas Kotak Halus", "Tekstur Kanvas Kosong", "Gradien Pastel Lembut", 
+            "Batu Tulis Monokrom", "Kertas Krim Hangat", "Solid Biru Es Dingin", "Matte Arang Gelap", "Tekstur Noise (Bintik) Halus",
+            "Tirai Merah Marun", "Tekstur Pasir Emas", "Kaca Pecah Retak 3D", "Lipatan Kain Sutra Biru", "Ukiran Batu Candi", "Serat Karbon Hitam", "Kilauan Gliter Emas",
+            "Kabut Pagi Hari", "Tetesan Embun di Daun"
+        ];
+
+        const generateFrames = (limit, allowCustom) => {
+            let html = '';
+            for(let i=0; i<Math.min(limit, rawFrames.length); i++) html += `<option value="${rawFrames[i]}">${i+1}. ${rawFrames[i]}</option>`;
+            if(allowCustom) html += `<option value="CUSTOM" id="optCustomFrame" class="font-bold text-yellow-400" style="color:yellow;">✨ Custom Bingkai/Latar (Ketik Sendiri)</option>`;
+            return html;
+        };
+
+        // ==========================================
+        // LOCAL STORAGE & INITIALIZATION
+        // ==========================================
+        let masterAdminEmail = localStorage.getItem('khatAiAdmin') || "adhiexxs@gmail.com";
+        let userSettings = JSON.parse(localStorage.getItem('khatAiUserSettings')) || {};
+        
+        let appSettings = JSON.parse(localStorage.getItem('khatAiGlobalSettings')) || {
+            version: "3.1.0", theme: "default", bannerEnabled: false, bannerText: "✨ Selamat Datang di Khat AI Premium ✨",
+            bannerSpeed: "10s", bannerStyle: "anim-scroll-normal", promoEnabled: false, promoTitle: "Promo Spesial", promoUrl: "https://wa.me/"
+        };
+        
+        if(!userSettings[masterAdminEmail]) {
+            userSettings[masterAdminEmail] = { maxFrames: 99, maxStyles: 59, theme: 'global', allowRatio: true, maxImages: 4, maxQuality: '4K', allowUpload: true, allowCustom: true, demoExpiry: 0 };
+            localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+        }
+        
+        let currentUserEmail = "";
+        let activeApiKeys = [];
+        let isDemoLocked = false;
+
+        function applyTheme(themeKey) {
+            const theme = themes[themeKey] || themes.default;
+            document.documentElement.style.setProperty('--color-base', theme.base);
+            document.documentElement.style.setProperty('--color-panel', theme.panel);
+            document.documentElement.style.setProperty('--color-accent1', theme.accent1);
+            document.documentElement.style.setProperty('--color-accent2', theme.accent2);
+            document.documentElement.style.setProperty('--color-text', theme.text);
+            document.documentElement.style.setProperty('--color-border', theme.border);
+        }
+
+        function applyFeatures() {
+            const isMaster = (currentUserEmail === masterAdminEmail);
+            
+            // Sembunyikan Label Hitungan dari Pengguna Biasa
+            if(document.getElementById('lblStyleCount')) document.getElementById('lblStyleCount').classList.toggle('hidden', !isMaster);
+            if(document.getElementById('lblFrameCount')) document.getElementById('lblFrameCount').classList.toggle('hidden', !isMaster);
+
+            const bannerContainer = document.getElementById('bannerContainer');
+            const bannerTextElem = document.getElementById('bannerTextElem');
+            if(appSettings.bannerEnabled && bannerContainer) {
+                bannerContainer.classList.remove('hidden');
+                bannerTextElem.innerText = appSettings.bannerText || "Pengumuman...";
+                bannerTextElem.setAttribute('data-text', appSettings.bannerText || "Pengumuman...");
+                bannerTextElem.className = "text-[10px] sm:text-xs font-semibold whitespace-nowrap"; 
+                
+                const style = appSettings.bannerStyle || 'anim-scroll-normal';
+                if(style) bannerTextElem.classList.add(style);
+                bannerTextElem.style.animationDuration = appSettings.bannerSpeed || '10s';
+            } else if(bannerContainer) {
+                bannerContainer.classList.add('hidden');
+            }
+
+            const promoLinkContainer = document.getElementById('promoLinkContainer');
+            if(appSettings.promoEnabled && promoLinkContainer) {
+                promoLinkContainer.classList.remove('hidden');
+                promoLinkContainer.classList.add('flex');
+                document.getElementById('promoLinkText').innerText = appSettings.promoTitle || "Promo Spesial";
+                promoLinkContainer.href = appSettings.promoUrl || "#";
+            } else if(promoLinkContainer) {
+                promoLinkContainer.classList.add('hidden');
+                promoLinkContainer.classList.remove('flex');
+            }
+
+            let perms = userSettings[currentUserEmail] || { maxFrames: 10, maxStyles: 10, theme: 'global', allowRatio: false, maxImages: 1, maxQuality: 'HD', allowUpload: false, allowCustom: false, demoExpiry: 0 };
+            if (isMaster) perms = userSettings[masterAdminEmail]; 
+
+            const activeTheme = (perms.theme && perms.theme !== 'global') ? perms.theme : appSettings.theme;
+            applyTheme(activeTheme);
+
+            document.getElementById('khatStyle').innerHTML = generateStyles(perms.maxStyles, perms.allowCustom);
+            document.getElementById('frameStyle').innerHTML = generateFrames(perms.maxFrames, perms.allowCustom);
+
+            document.getElementById('optCustomStyle')?.classList.toggle('hidden', !perms.allowCustom);
+            document.getElementById('optCustomFrame')?.classList.toggle('hidden', !perms.allowCustom);
+            document.getElementById('imageUploadContainer').classList.toggle('hidden', !perms.allowUpload);
+            
+            document.getElementById('ratioContainer').classList.toggle('hidden', !perms.allowRatio);
+            if(!perms.allowRatio) document.querySelector('input[name="ratio"][value="1:1"]').checked = true;
+
+            document.querySelectorAll('input[name="imageCount"]').forEach(radio => {
+                if(parseInt(radio.value) > perms.maxImages) radio.parentElement.classList.add('hidden');
+                else radio.parentElement.classList.remove('hidden');
+            });
+            let currentImageCount = document.querySelector('input[name="imageCount"]:checked');
+            if(!currentImageCount || parseInt(currentImageCount.value) > perms.maxImages) document.querySelector('input[name="imageCount"][value="1"]').checked = true;
+
+            const qualityLevels = {"HD": 1, "FHD": 2, "4K": 3};
+            const maxQLevel = qualityLevels[perms.maxQuality] || 1;
+            document.querySelectorAll('input[name="quality"]').forEach(radio => {
+                 if(qualityLevels[radio.value] > maxQLevel) radio.parentElement.classList.add('hidden');
+                 else radio.parentElement.classList.remove('hidden');
+            });
+            let currentQ = document.querySelector('input[name="quality"]:checked');
+            if(!currentQ || qualityLevels[currentQ.value] > maxQLevel) document.querySelector('input[name="quality"][value="HD"]').checked = true;
+        }
+
+        const loginGate = document.getElementById('loginGate');
+        const savedEmail = localStorage.getItem('khatAiCurrentEmail');
+        const savedKeys = JSON.parse(localStorage.getItem('khatAiCurrentKeys') || "[]");
+        
+        if (savedEmail) {
+            currentUserEmail = savedEmail;
+            activeApiKeys = savedKeys;
+            loginGate.style.display = 'none';
+            if(currentUserEmail === masterAdminEmail) {
+                document.getElementById('openAdminBtn').classList.remove('hidden');
+                document.getElementById('openAdminBtn').classList.add('flex');
+            }
+            applyFeatures();
+        } else { applyTheme('default'); }
+
+        // STRICT LOGIN
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const inputEmail = document.getElementById('loginEmailInput').value.trim().toLowerCase();
+            const inputKeysRaw = document.getElementById('loginApiKey').value.trim();
+            
+            if (!inputEmail) {
+                document.getElementById('loginError').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Masukkan email Anda.';
+                document.getElementById('loginError').classList.remove('hidden');
+                return;
+            }
+
+            if (inputEmail !== masterAdminEmail && !userSettings[inputEmail]) {
+                document.getElementById('loginError').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Akses Ditolak! Email tidak terdaftar.';
+                document.getElementById('loginError').classList.remove('hidden');
+                return;
+            }
+
+            let parsedKeys = inputKeysRaw ? inputKeysRaw.split(',').map(k => k.trim()).filter(k => k !== '') : [""];
+            
+            currentUserEmail = inputEmail;
+            activeApiKeys = parsedKeys;
+            
+            localStorage.setItem('khatAiCurrentEmail', currentUserEmail);
+            localStorage.setItem('khatAiCurrentKeys', JSON.stringify(activeApiKeys));
+
+            loginGate.style.display = 'none';
+            if(currentUserEmail === masterAdminEmail) {
+                document.getElementById('openAdminBtn').classList.remove('hidden');
+                document.getElementById('openAdminBtn').classList.add('flex');
+            }
+            applyFeatures();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('khatAiCurrentEmail'); localStorage.removeItem('khatAiCurrentKeys');
+            location.reload(); 
+        });
+
+        // ==========================================
+        // SUPER ADMIN PANEL
+        // ==========================================
+        const adminModal = document.getElementById('adminModal');
+        document.getElementById('openAdminBtn').addEventListener('click', () => {
+            renderUserList(); populateUserSelect();
+            document.getElementById('globalThemeSelect').value = appSettings.theme;
+            
+            document.getElementById('globalBannerToggle').checked = appSettings.bannerEnabled || false;
+            document.getElementById('globalBannerText').value = appSettings.bannerText || "";
+            document.getElementById('globalBannerSpeed').value = appSettings.bannerSpeed || "10s";
+            document.getElementById('globalBannerStyle').value = appSettings.bannerStyle || "anim-scroll-normal";
+            
+            document.getElementById('globalPromoToggle').checked = appSettings.promoEnabled || false;
+            document.getElementById('globalPromoTitle').value = appSettings.promoTitle || "";
+            document.getElementById('globalPromoUrl').value = appSettings.promoUrl || "";
+
+            adminModal.classList.remove('hidden'); adminModal.classList.add('flex');
+        });
+        document.getElementById('closeAdminBtn').addEventListener('click', () => adminModal.classList.add('hidden'));
+
+        function renderUserList() {
+            const list = document.getElementById('userList'); list.innerHTML = '';
+            Object.keys(userSettings).forEach(email => {
+                const isMaster = email === masterAdminEmail;
+                list.innerHTML += `
+                    <li class="flex justify-between items-center bg-black/40 p-2 rounded border border-gray-700">
+                        <span class="text-xs truncate mr-2"><i class="fa-solid fa-user ${isMaster?'text-yellow-500':'text-gray-400'}"></i> ${email}</span>
+                        ${!isMaster ? `<button onclick="removeUser('${email}')" class="text-red-400 text-[10px] hover:text-red-300 font-bold px-2 py-1 bg-red-900/30 rounded">Hapus</button>` : ''}
+                    </li>`;
+            });
+        }
+
+        function populateUserSelect() {
+            const select = document.getElementById('selectTargetUser');
+            select.innerHTML = '<option value="">-- Pilih Pengguna --</option>';
+            Object.keys(userSettings).forEach(email => { if (email !== masterAdminEmail) select.innerHTML += `<option value="${email}">${email}</option>`; });
+        }
+
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            const newEmail = document.getElementById('newUserEmail').value.trim().toLowerCase();
+            if(newEmail && !userSettings[newEmail]) {
+                userSettings[newEmail] = { maxFrames: 10, maxStyles: 10, theme: 'global', allowRatio: false, maxImages: 1, maxQuality: 'HD', allowUpload: false, allowCustom: false, demoExpiry: 0 };
+                localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+                document.getElementById('newUserEmail').value = '';
+                renderUserList(); populateUserSelect();
+                showMessage("Berhasil", "Email berhasil ditambahkan ke database lokal.", "success");
+            }
+        });
+
+        window.removeUser = function(email) { 
+            delete userSettings[email]; localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+            renderUserList(); populateUserSelect();
+            if(document.getElementById('selectTargetUser').value === email) document.getElementById('userSpecificSettings').classList.add('hidden');
+        }
+
+        document.getElementById('selectTargetUser').addEventListener('change', (e) => {
+            const email = e.target.value; const settingsPanel = document.getElementById('userSpecificSettings');
+            if(email && userSettings[email]) {
+                const perms = userSettings[email];
+                document.getElementById('userMaxFrames').value = perms.maxFrames || 10; document.getElementById('userMaxStyles').value = perms.maxStyles || 10;
+                document.getElementById('userMaxImages').value = perms.maxImages || 1; document.getElementById('userMaxQuality').value = perms.maxQuality || "HD";
+                document.getElementById('userTheme').value = perms.theme || "global";
+                document.getElementById('userAllowRatio').checked = perms.allowRatio; document.getElementById('userAllowUpload').checked = perms.allowUpload;
+                document.getElementById('userAllowCustom').checked = perms.allowCustom;
+                
+                // DEMO UI UPDATE
+                if (perms.demoExpiry && perms.demoExpiry > Date.now()) {
+                    document.getElementById('demoStatusText').innerText = `Berakhir: ${new Date(perms.demoExpiry).toLocaleString('id-ID')}`;
+                    document.getElementById('userDemoDuration').value = "0"; 
+                } else if (perms.demoExpiry && perms.demoExpiry <= Date.now()) {
+                    document.getElementById('demoStatusText').innerText = "Status: WAKTU DEMO HABIS";
+                    document.getElementById('userDemoDuration').value = "0";
+                } else {
+                    document.getElementById('demoStatusText').innerText = "Status: Permanen / Tanpa Batas";
+                    document.getElementById('userDemoDuration').value = "0";
+                }
+
+                settingsPanel.classList.remove('hidden'); setTimeout(() => settingsPanel.classList.remove('opacity-50'), 10);
+            } else {
+                settingsPanel.classList.add('opacity-50'); setTimeout(() => settingsPanel.classList.add('hidden'), 300);
+            }
+        });
+
+        // APPLY DEMO BUTTON
+        document.getElementById('applyDemoBtn').addEventListener('click', () => {
+            const email = document.getElementById('selectTargetUser').value;
+            if(email && userSettings[email]) {
+                const duration = parseInt(document.getElementById('userDemoDuration').value);
+                if(duration === 0) {
+                    userSettings[email].demoExpiry = 0;
+                    document.getElementById('demoStatusText').innerText = "Status: Permanen / Tanpa Batas";
+                } else {
+                    const expiryTime = Date.now() + (duration * 60 * 1000);
+                    userSettings[email].demoExpiry = expiryTime;
+                    const dateStr = new Date(expiryTime).toLocaleString('id-ID');
+                    document.getElementById('demoStatusText').innerText = `Berakhir: ${dateStr}`;
+                }
+                localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+                showMessage("Tersimpan", `Waktu demo untuk ${email} berhasil diatur!`, "success");
+            }
+        });
+
+        // Save normal user settings
+        ['userMaxFrames', 'userMaxStyles', 'userMaxImages', 'userMaxQuality', 'userTheme'].forEach(id => {
+            document.getElementById(id).addEventListener('change', (e) => {
+                const email = document.getElementById('selectTargetUser').value;
+                if(email && userSettings[email]) {
+                    userSettings[email][id.replace('user', '').charAt(0).toLowerCase() + id.replace('user', '').slice(1)] = isNaN(e.target.value) ? e.target.value : parseInt(e.target.value);
+                    localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+                    showMessage("Tersimpan", `Pengaturan batas untuk ${email} berhasil diperbarui!`, "success");
+                }
+            });
+        });
+        
+        ['userAllowRatio', 'userAllowUpload', 'userAllowCustom'].forEach(id => {
+            document.getElementById(id).addEventListener('change', (e) => {
+                const email = document.getElementById('selectTargetUser').value;
+                if(email && userSettings[email]) {
+                    userSettings[email][id.replace('user', '')] = e.target.checked;
+                    localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+                    showMessage("Tersimpan", `Izin untuk ${email} berhasil diperbarui!`, "success");
+                }
+            });
+        });
+
+        document.getElementById('saveGlobalSettingsBtn').addEventListener('click', () => {
+            appSettings = {
+                version: "3.1.0",
+                theme: document.getElementById('globalThemeSelect').value,
+                bannerEnabled: document.getElementById('globalBannerToggle').checked,
+                bannerText: document.getElementById('globalBannerText').value.trim(),
+                bannerSpeed: document.getElementById('globalBannerSpeed').value,
+                bannerStyle: document.getElementById('globalBannerStyle').value,
+                promoEnabled: document.getElementById('globalPromoToggle').checked,
+                promoTitle: document.getElementById('globalPromoTitle').value.trim(),
+                promoUrl: document.getElementById('globalPromoUrl').value.trim()
+            };
+            localStorage.setItem('khatAiGlobalSettings', JSON.stringify(appSettings));
+            applyFeatures(); showMessage("Tersimpan", "Pengaturan Utama & Banner berhasil diperbarui.", "success");
+        });
+
+        // ==========================================
+        // TELEGRAM OTP (ADMIN EMAIL CHANGE)
+        // ==========================================
+        let currentOtp = null, pendingAdminEmail = null;
+        document.getElementById('requestOtpBtn').addEventListener('click', async () => {
+            pendingAdminEmail = document.getElementById('newAdminEmail').value.trim().toLowerCase();
+            if(!pendingAdminEmail) return;
+            currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: `🔒 Kode OTP Admin KhatAI Anda: *${currentOtp}*`, parse_mode: 'Markdown' })
+                });
+                document.getElementById('adminModal').classList.add('hidden');
+                document.getElementById('otpModal').classList.remove('hidden'); document.getElementById('otpModal').classList.add('flex');
+            } catch(e) { showMessage("Gagal", "Setup Telegram belum benar atau tidak ada koneksi.", "error"); }
+        });
+        document.getElementById('cancelOtpBtn').addEventListener('click', () => {
+            document.getElementById('otpModal').classList.add('hidden'); document.getElementById('adminModal').classList.remove('hidden');
+        });
+        document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+            if(document.getElementById('otpInput').value === currentOtp) {
+                if(userSettings[masterAdminEmail]) { userSettings[pendingAdminEmail] = {...userSettings[masterAdminEmail]}; delete userSettings[masterAdminEmail]; }
+                masterAdminEmail = pendingAdminEmail; localStorage.setItem('khatAiAdmin', masterAdminEmail); localStorage.setItem('khatAiUserSettings', JSON.stringify(userSettings));
+                document.getElementById('otpModal').classList.add('hidden'); document.getElementById('adminModal').classList.remove('hidden');
+                renderUserList(); populateUserSelect(); showMessage("Berhasil", "Email Super Admin diubah!", "success");
+                setTimeout(() => document.getElementById('logoutBtn').click(), 2000);
+            } else { document.getElementById('otpError').classList.remove('hidden'); }
+        });
+
+        // ==========================================
+        // UI INTERACTIONS
+        // ==========================================
+        document.getElementById('khatStyle').addEventListener('change', (e) => document.getElementById('customStylePrompt').classList.toggle('hidden', e.target.value !== 'CUSTOM'));
+        document.getElementById('frameStyle').addEventListener('change', (e) => document.getElementById('customFramePrompt').classList.toggle('hidden', e.target.value !== 'CUSTOM'));
+
+        const hexToIndonesianColor = (hex) => {
+            const h = hex.toLowerCase();
+            if(h==='#ffd700') return 'Kuning Emas'; if(h==='#ffffff') return 'Putih Bersih'; if(h==='#000000') return 'Hitam Pekat';
+            if(h==='#ff0000') return 'Merah Terang'; if(h==='#00ff00') return 'Hijau Neon'; if(h==='#0000ff') return 'Biru Solid';
+            return 'Warna Kustom ('+h.toUpperCase()+')';
+        };
+
+        const colorInput = document.getElementById('textColor'), colorText = document.getElementById('textColorText'), colorName = document.getElementById('colorNameDisplay');
+        colorInput.addEventListener('input', (e) => { const val = e.target.value.toUpperCase(); colorText.value = val; colorName.innerText = hexToIndonesianColor(val); });
+        colorText.addEventListener('input', (e) => {
+            if(/^#[0-9A-F]{6}$/i.test(e.target.value)) { colorInput.value = e.target.value; colorName.innerText = hexToIndonesianColor(e.target.value); }
+        });
+
+        let uploadedImageData = null;
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImageData = event.target.result;
+                    document.getElementById('imagePreview').src = uploadedImageData;
+                    document.getElementById('previewWrapper').classList.remove('hidden');
+                    document.getElementById('uploadLabel').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        document.getElementById('removeImageBtn').addEventListener('click', () => {
+            uploadedImageData = null; document.getElementById('imageUpload').value = '';
+            document.getElementById('previewWrapper').classList.add('hidden'); document.getElementById('uploadLabel').classList.remove('hidden');
+        });
+
+        // CLOCK, CALENDAR & DEMO TIMER
+        function lockToolDemo() {
+            if(isDemoLocked) return;
+            isDemoLocked = true;
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('generateBtn').innerHTML = `<i class="fa-solid fa-lock text-xl"></i> Waktu Demo Habis`;
+            document.getElementById('generateBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('inputText').disabled = true;
+            showMessage("Waktu Habis", "Waktu percobaan (Demo) Anda telah berakhir. Silakan hubungi admin.", "error");
+        }
+
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('masehi-date').innerText = now.toLocaleDateString('id-ID', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+            document.getElementById('clock-time').innerText = now.toLocaleTimeString('id-ID');
+            try { document.getElementById('hijri-date').innerText = new Intl.DateTimeFormat('id-ID-u-ca-islamic', {day: 'numeric', month: 'long', year: 'numeric'}).format(now); } catch(e) {}
+
+            // DEMO TIMER LOGIC
+            if (currentUserEmail && currentUserEmail !== masterAdminEmail && userSettings[currentUserEmail]?.demoExpiry) {
+                const expiry = userSettings[currentUserEmail].demoExpiry;
+                if (expiry > 0) {
+                    const diff = expiry - Date.now();
+                    const container = document.getElementById('demoTimerContainer');
+                    const textElem = document.getElementById('demoTimerText');
+                    
+                    container.classList.remove('hidden'); container.classList.add('flex');
+
+                    if (diff <= 0) {
+                        textElem.innerText = "WAKTU HABIS";
+                        container.classList.remove('animate-pulse');
+                        lockToolDemo();
+                    } else {
+                        const h = Math.floor(diff / (1000 * 60 * 60));
+                        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const s = Math.floor((diff % (1000 * 60)) / 1000);
+                        textElem.innerText = `Sisa Demo: ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                    }
+                }
+            }
+        }, 1000);
+
+        // ==========================================
+        // AI ENGINE GENERATOR
+        // ==========================================
+        async function fetchWithFallback(promptText, aspectFormat) {
+            let keyIndex = 0; let lastErrorMsg = "";
+
+            if (!activeApiKeys || activeApiKeys.length === 0 || activeApiKeys[0] === "") activeApiKeys = [""]; 
+
+            while (keyIndex < activeApiKeys.length) {
+                const apiKey = activeApiKeys[keyIndex] || "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{ role: 'user', parts: [{ text: promptText }] }],
+                    generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: aspectFormat } },
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" }, { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }, { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                    ]
+                };
+                
+                if (uploadedImageData) payload.contents[0].parts.push({ inlineData: { mimeType: "image/jpeg", data: uploadedImageData.split(',')[1] } });
+
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    const data = await response.json();
+                    if (response.ok) {
+                        const part = data?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                        if (!part) throw new Error("Ditolak Filter Keamanan Google. Coba ganti kata-katanya.");
+                        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                    }
+                    if (response.status === 429) { console.warn(`Key ${keyIndex+1} Limit.`); lastErrorMsg = "Limit Kuota."; keyIndex++; continue; } 
+                    else { throw new Error(data?.error?.message || `HTTP Error ${response.status}`); }
+                } catch (e) {
+                    lastErrorMsg = e.message; if(e.message === "Failed to fetch") { keyIndex++; continue; }
+                    throw e; 
+                }
+            }
+            throw new Error(`Gagal: ${lastErrorMsg}`);
+        }
+
+        const generatedData = [];
+
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            if(isDemoLocked) return;
+
+            const inputText = document.getElementById('inputText').value.trim();
+            if(!inputText) return showMessage("Peringatan", "Masukkan teks kalimat utama!", "error");
+
+            const btn = document.getElementById('generateBtn'); const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<div class="loader-spinner !w-6 !h-6 !border-2"></div> <span class="animate-pulse tracking-widest text-black">Melukis...</span>`;
+            btn.disabled = true;
+
+            const textMode = document.getElementById('textMode').value;
+            const style = document.getElementById('khatStyle').value === 'CUSTOM' ? document.getElementById('customStylePrompt').value : document.getElementById('khatStyle').value;
+            const frameRaw = document.getElementById('frameStyle').value;
+            const frame = frameRaw === 'CUSTOM' ? document.getElementById('customFramePrompt').value : frameRaw;
+            const ratio = document.querySelector('input[name="ratio"]:checked').value;
+            const quality = document.querySelector('input[name="quality"]:checked').value;
+            const count = parseInt(document.querySelector('input[name="imageCount"]:checked').value);
+            const watermarkText = document.getElementById('watermarkInput').value.trim();
+            const wantOriginal = document.getElementById('dlOriginal').checked;
+            const wantWatermark = document.getElementById('dlWatermark').checked;
+
+            if(!wantOriginal && !wantWatermark) {
+                showMessage("Peringatan", "Pilih minimal 1 jenis hasil unduhan (Asli atau Watermark) pada kotak centang.", "error");
+                btn.innerHTML = originalHtml; btn.disabled = false; return;
+            }
+
+            let masterPrompt = `[CRITICAL INSTRUCTION: SAFE, BENIGN, AND BEAUTIFUL ARTISTIC TYPOGRAPHY. High-Precision Calligraphy AI]\n`;
+            if (textMode === 'translation') masterPrompt += `1. TRANSLATION MODE: Translate this exact meaning to formal, perfect Arabic, then write as beautiful calligraphy: "${inputText}". `;
+            else masterPrompt += `1. TRANSLITERATION MODE: WRITE EXACTLY THIS TEXT in Arabic letters (Transliteration/Pegon) as calligraphy: "${inputText}". `;
+            
+            masterPrompt += `STRICT RULE: LOCK THE LETTERS. Do NOT add extra words. Adhere 100% to strict Arabic grammar and calligraphic rules.\n2. Calligraphy Style: ${style}.\n3. Font Color: ${colorText.value}.\n`;
+            
+            if (frameRaw.includes("Tanpa Bingkai")) masterPrompt += `4. Background: PURE TRANSPARENT BACKGROUND (No frame, isolated text only). Must be transparent.\n`;
+            else if (frameRaw.includes("Otomatis (Tampilan Yang Lagi Trend")) masterPrompt += `4. Background: Generate a currently trending, highly aesthetic, modern and popular background for Islamic calligraphy in 2026.\n`;
+            else masterPrompt += `4. Background/Frame: ${frame}.\n`;
+            
+            masterPrompt += `5. Detail: ${quality} resolution, masterpiece, highly detailed.\n`;
+            
+            const media = document.getElementById('mediaPrompt').value.trim();
+            if(media) masterPrompt += `6. Media/Expression Constraints: ${media}. `;
+            if(uploadedImageData) masterPrompt += `(CRITICAL OVERRIDE FOR UPLOADED IMAGE: Sharpen image, fix lighting, remove noise. YOU MUST PRESERVE 100% of the original facial identity, bone structure, eye shape, lip shape, skin tone, jaw, and natural character of the uploaded person. Do NOT change identity even if changing expression. The calligraphy must follow the contour of the object).`;
+
+            let aspectFormat = "1:1"; if(ratio === "16:9") aspectFormat = "16:9"; if(ratio === "3:4") aspectFormat = "3:4"; if(ratio === "9:16") aspectFormat = "9:16";
+
+            const resultsGrid = document.getElementById('resultsGrid'); resultsGrid.innerHTML = ''; 
+            generatedData.length = 0;
+            let aspectClass = "aspect-square"; if(ratio === "16:9") aspectClass = "aspect-video"; if(ratio === "3:4") aspectClass = "aspect-[3/4]"; if(ratio === "9:16") aspectClass = "aspect-[9/16]";
+
+            for(let i=0; i<count; i++) resultsGrid.innerHTML += `<div id="loader-orig-${i}" class="${aspectClass} rounded-xl flex flex-col items-center justify-center border" style="background-color: var(--color-panel); border-color: var(--color-border);"><div class="loader-spinner"></div></div>`;
+
+            try {
+                for(let i=0; i<count; i++) {
+                    try {
+                        const imgUrl = await fetchWithFallback(masterPrompt, aspectFormat);
+                        generatedData.push({ originalUrl: imgUrl, watermarkText: watermarkText });
+                        
+                        const origCard = `
+                            <div class="${aspectClass} rounded-xl overflow-hidden relative group shadow-lg border" style="background-color: var(--color-panel); border-color: var(--color-border);">
+                                <img src="${imgUrl}" class="w-full h-full object-cover">
+                                ${watermarkText && wantWatermark ? `<div class="watermark-overlay opacity-80">${watermarkText}</div>` : ''}
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center z-20">
+                                    <button onclick="openPreview(${i})" class="text-white rounded-full w-12 h-12 flex items-center justify-center transform hover:scale-110 shadow-lg" style="background-color: var(--color-accent2);"><i class="fa-solid fa-expand"></i></button>
+                                </div>
+                            </div>`;
+                        document.getElementById(`loader-orig-${i}`).outerHTML = origCard;
+                    } catch (err) {
+                        const errCard = `<div class="${aspectClass} bg-red-900/20 text-center p-4 border border-red-800 rounded-xl flex flex-col justify-center items-center"><i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl mb-2"></i><p class="text-xs text-red-400">${err.message}</p></div>`;
+                        document.getElementById(`loader-orig-${i}`).outerHTML = errCard;
+                    }
+                }
+                if(generatedData.length > 0) document.getElementById('downloadAllBtn').classList.remove('hidden');
+            } finally { btn.innerHTML = originalHtml; btn.disabled = false; }
+        });
+
+        function showMessage(title, text, type = 'info') {
+            document.getElementById('msgTitle').innerText = title; document.getElementById('msgText').innerText = text;
+            const msgBox = document.getElementById('msgBox'); msgBox.classList.remove('hidden'); msgBox.classList.add('flex');
+        }
+        document.getElementById('closeMsgBtn').addEventListener('click', () => { document.getElementById('msgBox').classList.add('hidden'); document.getElementById('msgBox').classList.remove('flex'); });
+
+        const lightbox = document.getElementById('lightbox'), lightboxImg = document.getElementById('lightboxImg');
+        let currentPreviewIndex = -1;
+        
+        window.openPreview = function(index) { 
+            currentPreviewIndex = index; lightboxImg.src = generatedData[index].originalUrl; 
+            lightbox.classList.remove('hidden'); lightbox.classList.add('flex'); 
+        }
+        document.getElementById('closeLightbox').addEventListener('click', () => lightbox.classList.add('hidden'));
+        
+        function downloadImage(url, filename, watermarkText = null) {
+            if(!watermarkText) {
+                const a = document.createElement('a'); a.href = url; a.download = filename; 
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            } else {
+                const img = new Image(); img.crossOrigin = "anonymous";
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
+                    
+                    ctx.font = `bold ${Math.floor(canvas.width * 0.05)}px sans-serif`; ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                    ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+                    ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 4; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+                    ctx.fillText(watermarkText, canvas.width * 0.95, canvas.height * 0.95);
+                    
+                    const dataUrl = canvas.toDataURL("image/png");
+                    const a = document.createElement('a'); a.href = dataUrl; a.download = filename; a.click();
+                };
+                img.src = url;
+            }
+        }
+
+        document.getElementById('downloadSingleBtn').addEventListener('click', () => {
+            if(currentPreviewIndex === -1) return;
+            const data = generatedData[currentPreviewIndex];
+            const wantOriginal = document.getElementById('dlOriginal').checked;
+            const wantWatermark = document.getElementById('dlWatermark').checked;
+            
+            if(wantOriginal) downloadImage(data.originalUrl, `KhatAI_${Date.now()}.png`, null);
+            if(wantWatermark && data.watermarkText) setTimeout(() => downloadImage(data.originalUrl, `KhatAI_${Date.now()}_WM.png`, data.watermarkText), 500);
+        });
+        
+        document.getElementById('downloadAllBtn').addEventListener('click', () => {
+            const wantOriginal = document.getElementById('dlOriginal').checked;
+            const wantWatermark = document.getElementById('dlWatermark').checked;
+            
+            generatedData.forEach((data, i) => { 
+                if(wantOriginal) setTimeout(() => { downloadImage(data.originalUrl, `KhatAI_Batch_${Date.now()}_Orig_${i}.png`, null); }, i * 600); 
+                if(wantWatermark && data.watermarkText) setTimeout(() => { downloadImage(data.originalUrl, `KhatAI_Batch_${Date.now()}_WM_${i}.png`, data.watermarkText); }, (i * 600) + 300);
+            });
+        });
+    </script>
+</body>
+</html>
